@@ -1,0 +1,20 @@
+{
+  "name": "節気帖",
+  "short_name": "節気帖",
+  "description": "七十二候・二十四節気の三語（日本語・中文・English）暦帖。データはすべて内蔵、通信なし。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F7F4EC",
+  "theme_color": "#F7F4EC",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "./assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

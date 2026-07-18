@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>について -- 節気帖</title>
+<meta name="description" content="節気帖のデータについてとプライバシー方針。位置情報・通知・カメラ・マイクなどの権限は一切要求せず、通信も発生しません。">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23F7F4EC'/%3E%3Ccircle cx='256' cy='256' r='168' fill='none' stroke='%233A362E' stroke-width='28' stroke-linecap='round' stroke-dasharray='980 75'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="./assets/icons/icon.svg">
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#F7F4EC">
+<link rel="canonical" href="https://ken917-star.github.io/sekkicho/about.html">
+<link rel="stylesheet" href="./assets/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <p class="site-title"><a href="./index.html" data-i18n="site_title">節気帖</a><span class="site-subtitle" data-i18n="site_subtitle">七十二候・二十四節気</span></p>
+    <nav class="site-nav" aria-label="Main">
+      <a href="./index.html" data-i18n="nav_today">今日</a>
+      <a href="./koyomi.html" data-i18n="nav_koyomi">七十二候</a>
+      <a href="./sekki.html" data-i18n="nav_sekki">二十四節気</a>
+      <a href="./about.html" aria-current="page" data-i18n="nav_about">について</a>
+    </nav>
+    <div class="lang-switch" aria-label="Language">
+      <button type="button" data-lang-switch="ja">日本語</button>
+      <button type="button" data-lang-switch="zh">中文</button>
+      <button type="button" data-lang-switch="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <h1 class="page-title" data-i18n="about_page_title">節気帖について</h1>
+
+    <section class="about-section">
+      <h2 data-i18n="about_data_title">データについて</h2>
+      <p data-i18n="about_data_body">二十四節気の日付は 2025年から2032年まで内蔵されており、天文計算に基づく暦表と照合したうえで固定値として保持しています。七十二候は各節気を五日ずつ三つに分けたもので、初候・次候・末候それぞれに古暦にもとづく候名と、旬の食材・季の花を添えた読み物として収録しています。</p>
+    </section>
+
+    <section class="about-section">
+      <h2 data-i18n="about_privacy_title">プライバシー</h2>
+      <p data-i18n="about_privacy_body">節気帖はアカウント登録を必要とせず、位置情報・通知・カメラ・マイクなどの端末権限も一切要求しません。解析ツールや広告SDKは組み込まれておらず、外部サーバーへの通信は発生しません。すべての候・節気データはアプリ内に同梱されており、オフラインで完結します。</p>
+    </section>
+
+    <section class="about-section">
+      <h2 data-i18n="about_offline_title">オフラインで動作</h2>
+      <p data-i18n="about_offline_body">一度読み込めば、以降はネットワーク接続がなくても閲覧できます。</p>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p data-i18n="footer_note">データはすべて端末内に保存され、通信は発生しません。</p>
+    <p><a href="./index.html" data-i18n="back_to_today">今日へ戻る</a></p>
+  </div>
+</footer>
+
+<script src="./assets/js/data.js"></script>
+<script src="./assets/js/koyomi.js"></script>
+<script src="./assets/js/i18n.js"></script>
+<script src="./assets/js/common.js"></script>
+</body>
+</html>

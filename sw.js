@@ -2,7 +2,7 @@
 // All URLs below are relative to this file's own scope so the site keeps
 // working when hosted under a sub-path (e.g. https://host/sekkicho/).
 
-var CACHE_NAME = "sekkicho-cache-v1";
+var CACHE_NAME = "sekkicho-cache-v2";
 
 var PRECACHE_URLS = [
   "./",
@@ -17,6 +17,7 @@ var PRECACHE_URLS = [
   "./assets/js/koyomi.js",
   "./assets/js/i18n.js",
   "./assets/js/common.js",
+  "./assets/js/wheel.js",
   "./assets/js/page-index.js",
   "./assets/js/page-koyomi.js",
   "./assets/js/page-sekki.js",

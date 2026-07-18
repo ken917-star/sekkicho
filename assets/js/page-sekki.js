@@ -17,7 +17,8 @@
     var t = window.SekkiI18n.t;
     var data = window.SEKKI_DATA;
     var refYear = referenceYear();
-    var fmt = window.SekkiCommon.formatDate;
+    var common = window.SekkiCommon;
+    var fmt = common.formatDate;
 
     var container = document.getElementById("sekkiList");
     container.innerHTML = "";
@@ -28,12 +29,23 @@
       });
       if (seasonSekki.length === 0) return;
 
+      var seasonColor = common.SEASON_COLORS[season];
+
       var group = document.createElement("section");
       group.className = "season-group";
 
+      var giant = document.createElement("span");
+      giant.className = "season-giant";
+      giant.setAttribute("aria-hidden", "true");
+      giant.textContent = t("season_" + season, "ja");
+      giant.style.color = common.hexToRgba(seasonColor, 0.15);
+      group.appendChild(giant);
+
       var h2 = document.createElement("h2");
+      h2.style.borderBottomColor = seasonColor;
       var label = document.createElement("span");
       label.textContent = t("season_" + season, lang);
+      label.style.color = seasonColor;
       h2.appendChild(label);
       var enLabel = document.createElement("span");
       enLabel.className = "season-en";
@@ -48,6 +60,12 @@
 
         var header = document.createElement("div");
         header.className = "entry-header";
+
+        var chip = document.createElement("span");
+        chip.className = "sekki-color-chip";
+        chip.setAttribute("aria-hidden", "true");
+        chip.style.background = seasonColor;
+        header.appendChild(chip);
 
         var name = document.createElement("span");
         name.className = "entry-name";

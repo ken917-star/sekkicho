@@ -49,7 +49,21 @@
       lang_ja: "日本語",
       lang_zh: "中文",
       lang_en: "English",
-      notfound_body: "お探しのページは見つかりませんでした。"
+      notfound_body: "お探しのページは見つかりませんでした。",
+      site_tagline: "一年を七十二の季節に分ける、いにしえの暦。",
+      intro_title: "はじめての方へ",
+      intro_sekki_title: "二十四節気とは",
+      intro_sekki_body: "太陽の運行を24等分した、季節の大きな節目。",
+      intro_kou_title: "七十二候とは",
+      intro_kou_body: "節気をさらに三分した、五日ごとの小さな季節。",
+      intro_usage_title: "この頁の使い方",
+      intro_usage_body: "毎日開いて、季節の進みと物語をひとつ読む。",
+      wheel_order_prefix: "第",
+      wheel_order_suffix: "候",
+      wheel_center_label: "七十二候のいま",
+      wheel_aria_label: "七十二候の年輪図",
+      wheel_start_marker_note: "起点",
+      entry_now_label: "いま"
     },
     zh: {
       site_title: "節気帖",
@@ -93,7 +107,21 @@
       lang_ja: "日本語",
       lang_zh: "中文",
       lang_en: "English",
-      notfound_body: "未能找到您要访问的页面。"
+      notfound_body: "未能找到您要访问的页面。",
+      site_tagline: "把一年分成七十二个小季节的古老历法。",
+      intro_title: "初次访问",
+      intro_sekki_title: "何谓二十四节气",
+      intro_sekki_body: "依太阳运行将一年分为24段的季节节点。",
+      intro_kou_title: "何谓七十二候",
+      intro_kou_body: "把节气再分三段，每五日一候的微小季节。",
+      intro_usage_title: "本页使用方法",
+      intro_usage_body: "每天打开，看看季节走到哪，读一段物语。",
+      wheel_order_prefix: "第",
+      wheel_order_suffix: "候",
+      wheel_center_label: "七十二候之今",
+      wheel_aria_label: "七十二候年轮图",
+      wheel_start_marker_note: "起点",
+      entry_now_label: "此刻"
     },
     en: {
       site_title: "Sekkicho",
@@ -137,7 +165,21 @@
       lang_ja: "日本語",
       lang_zh: "中文",
       lang_en: "English",
-      notfound_body: "The page you were looking for could not be found."
+      notfound_body: "The page you were looking for could not be found.",
+      site_tagline: "An old calendar that divides the year into 72 micro-seasons.",
+      intro_title: "New Here?",
+      intro_sekki_title: "The 24 Solar Terms",
+      intro_sekki_body: "24 turning points marking the sun's yearly path.",
+      intro_kou_title: "The 72 Micro-Seasons",
+      intro_kou_body: "Each solar term split into three five-day spans.",
+      intro_usage_title: "How to Use This Page",
+      intro_usage_body: "Open daily to see how far the season has turned.",
+      wheel_order_prefix: "Micro-Season No. ",
+      wheel_order_suffix: "",
+      wheel_center_label: "72 Micro-Seasons, Now",
+      wheel_aria_label: "Wheel of the 72 micro-seasons",
+      wheel_start_marker_note: "start",
+      entry_now_label: "Now"
     }
   };
 

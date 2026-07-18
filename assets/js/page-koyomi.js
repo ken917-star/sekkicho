@@ -3,15 +3,31 @@
 
   var SEASON_ORDER = ["spring", "summer", "autumn", "winter"];
 
+  function kouGlobalIndex(kouId) {
+    // kou ids are "kou-01".."kou-72", already in the 72-step chronological
+    // order that data.js was written in. Parsing the numeric suffix gives a
+    // stable "which of the 72" number without needing to touch data.js.
+    return parseInt(kouId.split("-")[1], 10);
+  }
+
   function render() {
     var lang = window.SekkiI18n.getLang();
     var t = window.SekkiI18n.t;
     var data = window.SEKKI_DATA;
+    var common = window.SekkiCommon;
 
     var sekkiById = {};
     data.sekki.forEach(function (s) {
       sekkiById[s.id] = s;
     });
+
+    var todayKouId = null;
+    try {
+      var todayResult = window.Koyomi.getKoyomi(new Date());
+      todayKouId = todayResult && todayResult.kou ? todayResult.kou.id : null;
+    } catch (e) {
+      todayKouId = null;
+    }
 
     var container = document.getElementById("koyomiList");
     container.innerHTML = "";
@@ -22,12 +38,23 @@
       });
       if (seasonSekki.length === 0) return;
 
+      var seasonColor = common.SEASON_COLORS[season];
+
       var group = document.createElement("section");
       group.className = "season-group";
 
+      var giant = document.createElement("span");
+      giant.className = "season-giant";
+      giant.setAttribute("aria-hidden", "true");
+      giant.textContent = t("season_" + season, "ja");
+      giant.style.color = common.hexToRgba(seasonColor, 0.15);
+      group.appendChild(giant);
+
       var h2 = document.createElement("h2");
+      h2.style.borderBottomColor = seasonColor;
       var jaZhLabel = document.createElement("span");
       jaZhLabel.textContent = t("season_" + season, lang);
+      jaZhLabel.style.color = seasonColor;
       h2.appendChild(jaZhLabel);
       var enLabel = document.createElement("span");
       enLabel.className = "season-en";
@@ -43,17 +70,34 @@
         });
 
         kouList.forEach(function (k) {
+          var isToday = k.id === todayKouId;
           var card = document.createElement("article");
-          card.className = "entry-card";
+          card.className = "entry-card" + (isToday ? " is-today" : "");
+          if (isToday) card.style.borderLeftColor = seasonColor;
           card.id = k.id;
 
           var header = document.createElement("div");
           header.className = "entry-header";
 
+          var globalOrder = document.createElement("span");
+          globalOrder.className = "entry-global-order";
+          globalOrder.style.color = seasonColor;
+          globalOrder.textContent =
+            t("wheel_order_prefix", lang) + kouGlobalIndex(k.id) + t("wheel_order_suffix", lang);
+          header.appendChild(globalOrder);
+
           var order = document.createElement("span");
           order.className = "entry-order";
           order.textContent = t("kou_order_" + k.order, lang) + " -- " + s[lang];
           header.appendChild(order);
+
+          if (isToday) {
+            var nowBadge = document.createElement("span");
+            nowBadge.className = "entry-now-badge";
+            nowBadge.style.color = seasonColor;
+            nowBadge.textContent = t("entry_now_label", lang);
+            header.appendChild(nowBadge);
+          }
 
           var name = document.createElement("span");
           name.className = "entry-name";

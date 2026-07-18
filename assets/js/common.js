@@ -8,12 +8,32 @@
     winter: "#6B7A8C"
   };
 
+  // Same four colors expressed as "r,g,b" triplets so CSS can compose
+  // rgba(var(--accent-rgb), <alpha>) for low-opacity seasonal washes
+  // (hero background wash, wheel arcs, etc.) without needing color-mix().
+  var SEASON_RGB = {
+    spring: "196,138,156",
+    summer: "110,139,116",
+    autumn: "181,118,42",
+    winter: "107,122,140"
+  };
+
+  function hexToRgbaString(hex, alpha) {
+    var h = String(hex).replace("#", "");
+    var r = parseInt(h.substring(0, 2), 16);
+    var g = parseInt(h.substring(2, 4), 16);
+    var b = parseInt(h.substring(4, 6), 16);
+    return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+  }
+
   function applySeasonAccent() {
     try {
       var r = window.Koyomi.getKoyomi(new Date());
       var season = r && r.sekki && r.sekki.season;
       var color = SEASON_COLORS[season] || SEASON_COLORS.autumn;
+      var rgb = SEASON_RGB[season] || SEASON_RGB.autumn;
       document.documentElement.style.setProperty("--accent", color);
+      document.documentElement.style.setProperty("--accent-rgb", rgb);
       document.documentElement.setAttribute("data-season", season || "");
       return r;
     } catch (e) {
@@ -75,6 +95,8 @@
 
   window.SekkiCommon = {
     SEASON_COLORS: SEASON_COLORS,
+    SEASON_RGB: SEASON_RGB,
+    hexToRgba: hexToRgbaString,
     applySeasonAccent: applySeasonAccent,
     formatDate: formatDate
   };

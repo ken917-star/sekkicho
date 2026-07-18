@@ -7,7 +7,19 @@
     var t = window.SekkiI18n.t;
     var fmt = window.SekkiCommon.formatDate;
 
-    document.getElementById("kouHero").textContent = r.kou[lang];
+    var heroEl = document.getElementById("kouHero");
+    heroEl.innerHTML = "";
+    var heroName = document.createElement("span");
+    heroName.className = "kou-hero-name";
+    heroName.textContent = r.kou[lang];
+    heroEl.appendChild(heroName);
+    if (r.kou.jaReading) {
+      var heroFurigana = document.createElement("span");
+      heroFurigana.className = "kou-hero-furigana";
+      heroFurigana.textContent = r.kou.jaReading;
+      heroEl.appendChild(heroFurigana);
+    }
+
     document.getElementById("sekkiName").textContent = r.sekki[lang];
     document.getElementById("sekkiSeason").textContent = "(" + t("season_" + r.sekki.season, lang) + ")";
 
@@ -18,7 +30,18 @@
       fmt(r.kouRange.start, lang) + " ~ " + fmt(r.kouRange.end, lang);
 
     var pct = Math.round(r.progress * 100);
-    document.getElementById("progressFill").style.width = pct + "%";
+    var segs = document.querySelectorAll("#progressLine .progress-seg");
+    for (var i = 0; i < segs.length; i++) {
+      var segNum = i + 1;
+      segs[i].classList.remove("is-done", "is-current", "is-upcoming");
+      if (segNum < r.kouIndexInSekki) {
+        segs[i].classList.add("is-done");
+      } else if (segNum === r.kouIndexInSekki) {
+        segs[i].classList.add("is-current");
+      } else {
+        segs[i].classList.add("is-upcoming");
+      }
+    }
     document.getElementById("progressLabel").textContent = t("today_progress", lang) + "  " + pct + "%";
 
     document.getElementById("kouDesc").textContent = r.kou.desc[lang];

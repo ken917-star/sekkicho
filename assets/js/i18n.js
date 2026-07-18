@@ -63,7 +63,10 @@
       wheel_center_label: "七十二候のいま",
       wheel_aria_label: "七十二候の年輪図",
       wheel_start_marker_note: "起点",
-      entry_now_label: "いま"
+      entry_now_label: "いま",
+      affiliate_section_title: "この時期の楽しみ",
+      affiliate_link_label: "楽天で見る →",
+      about_affiliate_note: "外部ショップへのリンクにはアフィリエイトリンクが含まれる場合があります。"
     },
     zh: {
       site_title: "節気帖",
@@ -121,7 +124,10 @@
       wheel_center_label: "七十二候之今",
       wheel_aria_label: "七十二候年轮图",
       wheel_start_marker_note: "起点",
-      entry_now_label: "此刻"
+      entry_now_label: "此刻",
+      affiliate_section_title: "本候的时令雅趣",
+      affiliate_link_label: "前往乐天查看 →",
+      about_affiliate_note: "指向外部商店的链接可能包含联盟（affiliate）返利链接。"
     },
     en: {
       site_title: "Sekkicho",
@@ -179,7 +185,10 @@
       wheel_center_label: "72 Micro-Seasons, Now",
       wheel_aria_label: "Wheel of the 72 micro-seasons",
       wheel_start_marker_note: "start",
-      entry_now_label: "Now"
+      entry_now_label: "Now",
+      affiliate_section_title: "Seasonal Delights",
+      affiliate_link_label: "View on Rakuten →",
+      about_affiliate_note: "Links to external shops may include affiliate links."
     }
   };
 

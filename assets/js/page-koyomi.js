@@ -136,6 +136,13 @@
           extra.appendChild(flowerSpan);
 
           card.appendChild(extra);
+
+          var affiliateEl = document.createElement("div");
+          card.appendChild(affiliateEl);
+          if (window.SekkiAffiliate) {
+            window.SekkiAffiliate.renderCard(affiliateEl, k.id, lang);
+          }
+
           group.appendChild(card);
         });
       });

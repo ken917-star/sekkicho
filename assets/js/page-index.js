@@ -66,6 +66,11 @@
     var link = document.getElementById("sekkiReadingLink");
     link.setAttribute("href", "./sekki.html#" + r.sekki.id);
 
+    var affiliateEl = document.getElementById("affiliateSection");
+    if (affiliateEl && window.SekkiAffiliate) {
+      window.SekkiAffiliate.renderCard(affiliateEl, r.kou.id, lang);
+    }
+
     document.title = (lang === "ja" ? r.kou.ja + "／" + r.sekki.ja : r.kou[lang] + " / " + r.sekki[lang]) + " -- 節気帖";
   }
 

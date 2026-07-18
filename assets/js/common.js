@@ -58,7 +58,13 @@
   }
 
   function registerServiceWorker() {
-    if ("serviceWorker" in navigator) {
+    var isWebProtocol =
+      window.location.protocol === "http:" ||
+      window.location.protocol === "https:";
+    // Native app shells (e.g. Capacitor's capacitor:// / ionic:// schemes)
+    // don't need or support the offline service worker; only register it
+    // when actually served over http(s).
+    if (isWebProtocol && "serviceWorker" in navigator) {
       window.addEventListener("load", function () {
         navigator.serviceWorker.register("./sw.js").catch(function () {
           // Offline-first is a nice-to-have; failure to register (e.g. when

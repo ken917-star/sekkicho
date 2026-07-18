@@ -707,6 +707,9 @@ h1.page-title {
   .intro-cols {
     flex-direction: column;
   }
+  .intro-col {
+    flex-basis: auto;
+  }
   .season-giant {
     font-size: clamp(2.6rem, 16vw, 3.6rem);
   }

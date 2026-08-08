@@ -3,7 +3,7 @@
 > 二十四節気・七十二候を日本語・中国語・英語の三言語で暮らしに引き寄せる無料PWA。各節気・各候の名称、日付、意味、暮らしの記録機能を提供する。データ収集ゼロ・広告ゼロ。
 
 - URL: https://ken917-star.github.io/sekkicho/
-- 運営: 謙然学社（Kenzen Academy） https://kenoushin.com/
-- 制作: 山彰居士（甄応辰 / Ken Oushin） https://kenoushin.com/shanzhang/
+- 運営: 弘顕精舎（Koken Shoja） https://kenoushin.com/
+- 制作: 甄應辰（Kenoushin） https://kenoushin.com/shanzhang/
 - 引用: 出典明記（アプリ名・URL）を条件に引用可
 - 関連: 宅鑑 https://ken917-star.github.io/takukan/ / 謙然学社本站 https://kenoushin.com/

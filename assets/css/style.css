@@ -54,6 +54,120 @@ body::before {
   background: var(--accent);
 }
 
+.academy-return-bar {
+  border-bottom: 1px solid var(--line);
+  background: rgba(255,255,255,0.38);
+}
+
+.academy-return-bar .wrap {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+}
+
+.academy-return-bar a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 0.55rem;
+  border: 1px solid rgba(var(--accent-rgb),0.36);
+  color: var(--accent);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
+}
+
+.academy-return-bar a:hover,
+.academy-return-bar a:focus-visible {
+  background: var(--accent);
+  color: var(--bg);
+  transform: translateX(-2px);
+}
+
+.academy-return-bar a:active { transform: translateX(-4px); }
+.academy-label-zh,.academy-label-en { display: none; }
+html[lang="zh"] .academy-label-ja,html[lang="zh"] .academy-label-en { display: none; }
+html[lang="zh"] .academy-label-zh { display: inline; }
+html[lang="en"] .academy-label-ja,html[lang="en"] .academy-label-zh { display: none; }
+html[lang="en"] .academy-label-en { display: inline; }
+
+/* A quiet bridge back to the parent academy. It floats above the page so
+   every section remains escapable, while keeping the same paper-and-ink
+   language as the calendar itself. */
+.academy-back-button {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 99999;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 7px 16px 7px 7px;
+  border: 1px solid rgba(var(--accent-rgb), 0.48);
+  border-left-width: 3px;
+  background: rgba(247,244,236,0.94);
+  color: var(--ink);
+  box-shadow: 0 6px 18px rgba(58,54,46,0.13);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  text-decoration: none;
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.academy-back-arrow {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  background: rgba(var(--accent-rgb),0.12);
+  color: var(--accent);
+  font-family: Georgia, serif;
+  font-size: 1rem;
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.academy-back-button:hover,
+.academy-back-button:focus-visible {
+  color: var(--ink);
+  border-color: var(--accent);
+  background: var(--bg);
+  transform: translateY(-2px);
+  box-shadow: 0 9px 24px rgba(58,54,46,0.18);
+}
+
+.academy-back-button:hover .academy-back-arrow,
+.academy-back-button:focus-visible .academy-back-arrow {
+  background: var(--accent);
+  color: var(--bg);
+  transform: translateX(-2px);
+}
+
+.academy-back-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 9px rgba(58,54,46,0.12);
+}
+
+@media (max-width: 640px) {
+  .academy-back-button {
+    left: 12px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    min-height: 44px;
+    max-width: calc(100vw - 24px);
+    padding-right: 13px;
+    font-size: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .academy-back-button, .academy-back-arrow { transition: none; }
+}
+
 a {
   color: var(--ink);
   text-decoration: none;
@@ -128,11 +242,29 @@ nav.site-nav {
 
 nav.site-nav a {
   border-bottom: none;
-  padding-bottom: 2px;
+  padding: 0.22rem 0.38rem;
+  border: 1px solid transparent;
+  transition: color 0.16s ease, border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+}
+
+nav.site-nav a:hover,
+nav.site-nav a:focus-visible {
+  border-color: var(--line);
+  background: rgba(255,255,255,0.48);
+  transform: translateY(-1px);
+}
+
+nav.site-nav a:active { transform: translateY(1px); }
+
+nav.site-nav .academy-home-link {
+  color: var(--accent);
+  border-color: rgba(var(--accent-rgb), 0.28);
+  margin-right: 0.2rem;
+  white-space: nowrap;
 }
 
 nav.site-nav a[aria-current="page"] {
-  border-bottom: 1px solid var(--accent);
+  border-color: var(--accent);
   color: var(--accent);
 }
 
@@ -236,6 +368,42 @@ main {
   color: var(--ink-soft);
   font-weight: 400;
 }
+
+/* Latin titles must not inherit the upright CJK writing mode. In English,
+   the micro-season becomes a horizontal display heading, with metadata and
+   the year wheel sharing the row below it. Japanese and Chinese retain the
+   original vertical ceremonial composition. */
+html[lang="en"] .today-sheet {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 2.25rem 3rem;
+  align-items: center;
+  justify-content: stretch;
+}
+
+html[lang="en"] .kou-hero {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  width: 100%;
+  min-height: 0;
+  display: block;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  padding: 1.25rem 0 0.95rem;
+  border-left: 0;
+  border-top: 1px solid var(--accent);
+  font-family: Georgia, "Times New Roman", var(--serif);
+  font-size: clamp(2.45rem, 6.2vw, 4.8rem);
+  line-height: 1.08;
+  letter-spacing: 0.015em;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+html[lang="en"] .kou-hero-furigana,
+html[lang="en"] .kou-reading { display: none; }
+html[lang="en"] .today-meta { grid-column: 1; grid-row: 2; min-width: 0; }
+html[lang="en"] .kou-wheel { grid-column: 2; grid-row: 2; }
 
 .today-meta {
   position: relative;
@@ -775,4 +943,16 @@ h1.page-title {
   .season-giant {
     font-size: clamp(2.6rem, 16vw, 3.6rem);
   }
+  html[lang="en"] .today-sheet {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.6rem;
+  }
+  html[lang="en"] .kou-hero {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: clamp(2.15rem, 11vw, 3.25rem);
+    padding-top: 1rem;
+  }
+  html[lang="en"] .kou-wheel { grid-column: 1; grid-row: 2; }
+  html[lang="en"] .today-meta { grid-column: 1; grid-row: 3; }
 }

@@ -754,7 +754,7 @@
     {
       id: "kou-39", sekkiId: "risshuu", order: 3,
       ja: "蒙霧升降", jaReading: "ふかききりまとう",
-      zh: "玄鸟归", en: "Thick Mist Rises and Falls",
+      zh: "寒蝉鸣", en: "Thick Mist Rises and Falls",
       desc: {
         ja: "早朝、田畑や谷あいに深い霧がたちこめ、あたり一面を白く包み込む頃。日が昇るにつれて霧が晴れていく様子は、朝夕の気温差が広がり始めた証でもある。",
         zh: "清晨，田野与山谷间弥漫起浓雾、将四周笼罩成一片雪白的时节。随着日出雾气渐渐消散，也印证着早晚温差正在逐渐拉大。",

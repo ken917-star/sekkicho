@@ -2,7 +2,7 @@
 // All URLs below are relative to this file's own scope so the site keeps
 // working when hosted under a sub-path (e.g. https://host/sekkicho/).
 
-var CACHE_NAME = "sekkicho-cache-v5";
+var CACHE_NAME = "sekkicho-cache-v12";
 
 var PRECACHE_URLS = [
   "./",
@@ -53,6 +53,28 @@ self.addEventListener("activate", function (event) {
 
 self.addEventListener("fetch", function (event) {
   if (event.request.method !== "GET") return;
+
+  // HTML navigations prefer the network so a newly published header or
+  // navigation link is visible immediately; the cached page remains the
+  // offline fallback.
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).then(function (response) {
+        if (response && response.status === 200) {
+          var copy = response.clone();
+          caches.open(CACHE_NAME).then(function (cache) {
+            cache.put(event.request, copy);
+          });
+        }
+        return response;
+      }).catch(function () {
+        return caches.match(event.request).then(function (cached) {
+          return cached || caches.match("./index.html");
+        });
+      })
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then(function (cached) {

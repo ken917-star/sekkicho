@@ -74,7 +74,37 @@
     }
   }
 
+  // App Store build (Capacitor shell): the app stays a self-contained
+  // almanac, so the web-only links back to the parent site -- the floating
+  // return button and the footer operator line -- are removed in the app.
+  // The web pages keep them unchanged.
+  function stripParentSiteLinksInApp() {
+    var p = window.location.protocol;
+    if (p === "http:" || p === "https:") return;
+    var links = document.querySelectorAll('a[href^="https://kenoushin.com"]');
+    for (var i = 0; i < links.length; i++) {
+      var a = links[i];
+      if (!a.isConnected) continue;
+      var line = a.closest(".academy-back-button") || a.closest("p") || a;
+      line.parentNode.removeChild(line);
+    }
+  }
+
+  // App only: expose the system safe areas to CSS (env(safe-area-inset-*)) so the
+  // header can step around the iPhone Duo status rail while the page itself stays
+  // full-bleed. The web pages keep the default viewport.
+  function coverViewportInApp() {
+    var p = window.location.protocol;
+    if (p === "http:" || p === "https:") return;
+    var meta = document.querySelector('meta[name="viewport"]');
+    if (meta && meta.content.indexOf("viewport-fit") === -1) {
+      meta.content += ", viewport-fit=cover";
+    }
+  }
+  coverViewportInApp();
+
   document.addEventListener("DOMContentLoaded", function () {
+    stripParentSiteLinksInApp();
     window.SekkiI18n.applyStaticI18n();
     applySeasonAccent();
     wireLangSwitch();

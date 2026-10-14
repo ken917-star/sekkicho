@@ -194,9 +194,16 @@ img, svg {
 .site-header {
   border-bottom: 1px solid var(--line);
   padding: 1.75rem 0 1.25rem;
+  /* App on iPhone Duo inner display (portrait): the status bar runs across the
+     top, so start the header below it. env() is 0 on the web. */
+  padding-top: max(1.75rem, calc(env(safe-area-inset-top) + 0.75rem));
 }
 
 .site-header .wrap {
+  /* App on iPhone Duo: clear the status rail (top-trailing) and side insets.
+     env() is 0 on the web, where the viewport is not viewport-fit=cover. */
+  padding-left: max(1.75rem, env(safe-area-inset-left));
+  padding-right: max(1.75rem, env(safe-area-inset-right));
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -956,3 +963,47 @@ h1.page-title {
   html[lang="en"] .kou-wheel { grid-column: 1; grid-row: 2; }
   html[lang="en"] .today-meta { grid-column: 1; grid-row: 3; }
 }
+
+/* 換候のお知らせ (native app only; notify.js renders nothing on the web) */
+.notify-card {
+  border: 1px solid var(--line);
+  padding: 1.25rem 1.5rem;
+  margin-top: 1.5rem;
+}
+.notify-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.notify-title {
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  margin: 0;
+  font-weight: 500;
+}
+.notify-switch {
+  font-family: var(--serif);
+  font-size: 0.85rem;
+  min-width: 4.5rem;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink-soft);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.notify-switch.is-on {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+}
+.notify-body,
+.notify-denied {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+.notify-denied { color: var(--ink); }

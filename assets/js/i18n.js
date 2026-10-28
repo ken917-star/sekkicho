@@ -256,7 +256,14 @@
   var SUPPORTED = ["ja", "zh", "en"];
   var DEFAULT_LANG = "ja";
 
+  function urlLang() {
+    var m = ((root.location && root.location.search) || "").match(/[?&]lang=(ja|zh|en)(?:&|$)/);
+    return m ? m[1] : null;
+  }
+
   function getLang() {
+    var u = urlLang();
+    if (u) return u;
     try {
       var stored = root.localStorage ? root.localStorage.getItem(STORAGE_KEY) : null;
       if (stored && SUPPORTED.indexOf(stored) !== -1) return stored;
@@ -274,6 +281,10 @@
 
   function setLang(lang) {
     if (SUPPORTED.indexOf(lang) === -1) return;
+    // a ?lang= in the address would otherwise override the new choice
+    if (urlLang() && root.history && root.history.replaceState) {
+      root.history.replaceState(null, "", root.location.pathname + root.location.search.replace(/([?&])lang=(ja|zh|en)/, "$1lang=" + lang) + root.location.hash);
+    }
     try {
       if (root.localStorage) root.localStorage.setItem(STORAGE_KEY, lang);
     } catch (e) {

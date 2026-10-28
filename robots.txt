@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ken917-star.github.io/sekkicho/sitemap.xml
+Sitemap: https://kenoushin.com/sekkicho/sitemap.xml

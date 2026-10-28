@@ -2,7 +2,7 @@
 // All URLs below are relative to this file's own scope so the site keeps
 // working when hosted under a sub-path (e.g. https://host/sekkicho/).
 
-var CACHE_NAME = "sekkicho-cache-v25";
+var CACHE_NAME = "sekkicho-cache-v26";
 
 var PRECACHE_URLS = [
   "./",
@@ -35,7 +35,8 @@ var PRECACHE_URLS = [
   "./assets/js/page-sekki.js",
   "./assets/fonts/title-jp.woff",
   "./assets/fonts/title-cn.woff",
-  "./assets/icons/icon.svg"
+  "./assets/icons/icon-192.png",
+  "./assets/icons/apple-touch-icon.png"
 ];
 
 self.addEventListener("install", function (event) {

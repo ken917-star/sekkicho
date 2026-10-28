@@ -6,6 +6,12 @@
 (function (root) {
   "use strict";
   function lang() {
+    // ?lang=ja|zh|en (shareable / crawlable URL) wins and is remembered
+    var m = ((root.location && root.location.search) || "").match(/[?&]lang=(ja|zh|en)(?:&|$)/);
+    if (m) {
+      try { root.localStorage && root.localStorage.setItem("sekkicho_lang", m[1]); } catch (e) { /* storage blocked */ }
+      return m[1];
+    }
     try {
       var s = root.localStorage && root.localStorage.getItem("sekkicho_lang");
       if (s === "ja" || s === "zh" || s === "en") return s;

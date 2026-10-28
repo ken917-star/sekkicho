@@ -106,13 +106,64 @@
   }
   coverViewportInApp();
 
+  // Search engines: every page / language / kou gets its own canonical URL on
+  // kenoushin.com (the github.io copy folds into it), with ja/zh/en hreflang
+  // alternates and the language-less URL as x-default. Web only.
+  var SEO_BASE = "https://kenoushin.com/sekkicho/";
+  function applySeoLinks() {
+    var p = window.location.protocol;
+    if (p !== "http:" && p !== "https:") return;
+    var file = window.location.pathname.split("/").pop() || "index.html";
+    if (file === "index.html") file = "";
+    var q = window.location.search;
+    var id = (q.match(/[?&]id=(kou-\d{2})(?:&|$)/) || [])[1];
+    var lang = (q.match(/[?&]lang=(ja|zh|en)(?:&|$)/) || [])[1];
+    function url(l) {
+      var parts = [];
+      if (id) parts.push("id=" + id);
+      if (l) parts.push("lang=" + l);
+      return SEO_BASE + file + (parts.length ? "?" + parts.join("&") : "");
+    }
+    var head = document.head;
+    Array.prototype.forEach.call(head.querySelectorAll('link[rel="canonical"], link[rel="alternate"][hreflang]'), function (n) { n.parentNode.removeChild(n); });
+    function add(rel, href, hl) {
+      var l = document.createElement("link"); l.rel = rel; l.href = href;
+      if (hl) l.hreflang = hl;
+      head.appendChild(l);
+    }
+    add("canonical", url(lang));
+    add("alternate", url("ja"), "ja");
+    add("alternate", url("zh"), "zh-Hans");
+    add("alternate", url("en"), "en");
+    add("alternate", url(null), "x-default");
+  }
+
+  // When the page was opened with ?lang=, keep it on internal links so a
+  // crawler (no storage between pages) stays in the same language.
+  function carryLangOnLinks() {
+    var lang = (window.location.search.match(/[?&]lang=(ja|zh|en)(?:&|$)/) || [])[1];
+    if (!lang) return;
+    Array.prototype.forEach.call(document.querySelectorAll("a[href]"), function (a) {
+      var h = a.getAttribute("href");
+      if (!/^\.\/[a-z0-9-]*(\.html)?(\?[^#]*)?(#.*)?$/i.test(h)) return;
+      if (/[?&]lang=/.test(h)) { a.setAttribute("href", h.replace(/([?&])lang=(ja|zh|en)/, "$1lang=" + lang)); return; }
+      var hash = h.indexOf("#") >= 0 ? h.slice(h.indexOf("#")) : "";
+      var base = hash ? h.slice(0, h.indexOf("#")) : h;
+      a.setAttribute("href", base + (base.indexOf("?") >= 0 ? "&" : "?") + "lang=" + lang + hash);
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
+    applySeoLinks();
     stripParentSiteLinksInApp();
     window.SekkiI18n.applyStaticI18n();
     applySeasonAccent();
     wireLangSwitch();
     registerServiceWorker();
+    carryLangOnLinks();
+    setTimeout(carryLangOnLinks, 0); // links rendered by page scripts on DOMContentLoaded
   });
+  document.addEventListener("sekkicho:langchange", function () { setTimeout(carryLangOnLinks, 0); });
 
   var MONTH_JA_ZH = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
   var MONTH_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

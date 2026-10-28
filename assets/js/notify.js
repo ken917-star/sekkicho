@@ -7,6 +7,8 @@
  */
 (function () {
   "use strict";
+  function KN(k, lang) { return window.SekkiKouName ? window.SekkiKouName.name(k, lang) : (k[lang] || k.ja); }
+
 
   var STORAGE_KEY = "sekkicho_notify";
   var HOUR = 8;            // local time the kou notice is delivered
@@ -30,12 +32,12 @@
       noticeBody: function (sekki, order, no) { return "今天起进入" + sekki + order + "，第" + no + "候。"; }
     },
     en: {
-      title: "Kō change notice",
-      body: "On the morning a new kō begins (8:00), get its name as a quiet notice. Scheduled on this device only; nothing is sent anywhere.",
+      title: "New pentad notice",
+      body: "On the morning a new pentad begins (8:00), get its name as a quiet notice. Scheduled on this device only; nothing is sent anywhere.",
       on: "On", off: "Off",
       denied: "Notifications are not allowed. You can turn them on in Settings › 節気帖 › Notifications.",
       order: ["early pentad", "middle pentad", "late pentad"],
-      noticeBody: function (sekki, order, no) { return sekki + ", " + order + " — kō " + no + " of 72 begins today."; }
+      noticeBody: function (sekki, order, no) { return sekki + ", " + order + " — pentad " + no + " of 72 begins today."; }
     }
   };
 
@@ -81,7 +83,7 @@
       var at = new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), HOUR, 0, 0);
       var k = item.kou;
       var no = parseInt(k.id.replace("kou-", ""), 10);
-      var title = l === "ja" ? k.ja + "（" + k.jaReading + "）" : k[l];
+      var title = l === "ja" ? k.ja + "（" + k.jaReading + "）" : KN(k, l);
       return {
         id: Math.floor(item.startStamp / 86400000), // days since epoch: unique per kou start
         title: title,

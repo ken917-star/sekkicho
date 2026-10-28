@@ -2,7 +2,7 @@
 // All URLs below are relative to this file's own scope so the site keeps
 // working when hosted under a sub-path (e.g. https://host/sekkicho/).
 
-var CACHE_NAME = "sekkicho-cache-v16";
+var CACHE_NAME = "sekkicho-cache-v25";
 
 var PRECACHE_URLS = [
   "./",
@@ -14,15 +14,27 @@ var PRECACHE_URLS = [
   "./manifest.json",
   "./assets/css/style.css",
   "./assets/js/data.js",
+  "./assets/js/data-cn.js",
+  "./assets/js/edition.js",
+  "./assets/js/page-today-cn.js",
   "./assets/js/koyomi.js",
   "./assets/js/i18n.js",
   "./assets/js/common.js",
   "./assets/js/wheel.js",
   "./assets/js/affiliate.js",
+  "./assets/js/scene.js",
+  "./assets/js/kou-names.js",
+  "./assets/js/incho-store.js",
+  "./assets/js/page-emaki.js?v=2",
+  "./assets/js/page-incho.js",
+  "./emaki.html",
+  "./incho.html",
   "./assets/js/page-index.js",
   "./assets/js/notify.js",
   "./assets/js/page-koyomi.js",
   "./assets/js/page-sekki.js",
+  "./assets/fonts/title-jp.woff",
+  "./assets/fonts/title-cn.woff",
   "./assets/icons/icon.svg"
 ];
 

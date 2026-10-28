@@ -5,7 +5,11 @@
 :root {
   --bg: #F7F4EC;
   --ink: #3A362E;
-  --ink-soft: #8A8274;
+  --ink-soft: #6B6457;
+  --sun: #C73E3A;   /* 韓紅 -- Sundays and holidays */
+  --sat: #113285;   /* 紺青 -- Saturdays */
+  --card: #FBF9F4;
+  --line-soft: #EEE8DC;
   --line: #DDD6C8;
   --accent: #8A8274;
   --accent-rgb: 138,130,116;
@@ -1007,3 +1011,530 @@ h1.page-title {
   color: var(--ink-soft);
 }
 .notify-denied { color: var(--ink); }
+
+/* App (Capacitor) only -- native-shell.js adds .native-shell and the system
+   navbar/tabbar replace the web chrome. Insets come from the plugin. */
+html.native-shell .season-band,
+html.native-shell .site-header,
+html.native-shell .academy-back-button,
+html.native-shell .site-footer { display: none !important; }
+html.native-shell body {
+  padding-top: var(--cap-native-navigation-top, env(safe-area-inset-top));
+  padding-bottom: calc(var(--cap-native-navigation-bottom, env(safe-area-inset-bottom)) + 24px);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+html.native-shell main .lang-switch { margin: 1rem 0 1.5rem; }
+
+/* ===================================================================
+   v1.1 -- 暦 (calendar), compact 七十二候 list, 候 detail, today almanac
+   =================================================================== */
+.cal { margin-top: 0.5rem; }
+.cal-head { display: flex; align-items: center; gap: 0.25rem; margin-bottom: 0.75rem; }
+.cal-title { flex: 1; margin: 0; text-align: center; font-size: 1.15rem; font-weight: 500; letter-spacing: 0.08em; }
+.cal-nav {
+  width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;
+  border: none; background: transparent; color: var(--ink); border-radius: 22px; cursor: pointer;
+}
+.cal-nav:disabled { opacity: 0.25; cursor: default; }
+.cal-today-btn {
+  order: 3; height: 32px; padding: 0 0.8rem; border: 1px solid var(--line); border-radius: 16px;
+  background: var(--card); color: var(--accent); font: inherit; font-size: 0.8rem; letter-spacing: 0.08em; cursor: pointer;
+}
+.cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+.cal-wd { text-align: center; font-size: 0.72rem; color: var(--ink-soft); padding: 0.25rem 0; letter-spacing: 0.06em; }
+.cal-wd.is-sun { color: var(--sun); }
+.cal-wd.is-sat { color: var(--sat); }
+.cal-cell {
+  position: relative; min-height: 54px; padding: 6px 2px 4px; border: none; border-radius: 10px;
+  background: transparent; color: var(--ink); font: inherit; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+}
+.cal-cell.is-empty { cursor: default; }
+.cal-d { font-size: 1rem; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.cal-cell.is-sun .cal-d { color: var(--sun); }
+.cal-cell.is-sat .cal-d { color: var(--sat); }
+.cal-sub { font-size: 0.6rem; line-height: 1.2; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.cal-sub.is-sekki { color: var(--accent); }
+.cal-sub.is-holiday { color: var(--sun); }
+.cal-sub.is-lunar-first { color: var(--ink); }
+.cal-moon { position: absolute; top: 5px; right: 5px; line-height: 0; }
+.cal-cell.is-today .cal-d {
+  width: 1.75rem; height: 1.75rem; line-height: 1.75rem; border-radius: 50%;
+  background: var(--accent); color: #FBF9F4;
+}
+.cal-cell.is-selected { background: rgba(var(--accent-rgb), 0.1); }
+.moon .moon-dark { fill: #DDD6C8; }
+.moon .moon-lit { fill: #E8C66A; }
+.cal-detail { margin-top: 1.25rem; padding: 1.1rem 1.15rem 0.9rem; background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
+.cal-detail-head { margin-bottom: 0.6rem; }
+.cal-detail-date { margin: 0; font-size: 1.2rem; letter-spacing: 0.06em; }
+.cal-detail-sub { margin: 0.1rem 0 0; font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.08em; }
+.cal-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0.4rem 0 0.6rem; }
+.cal-chip { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 999px; background: rgba(var(--accent-rgb), 0.1); color: var(--accent); letter-spacing: 0.04em; }
+.cal-chip.is-holiday { background: rgba(199, 62, 58, 0.1); color: var(--sun); }
+.cal-chip.is-sekki { background: var(--accent); color: #FBF9F4; }
+.cal-rows { margin: 0; }
+.cal-row { display: flex; align-items: baseline; gap: 1rem; padding: 0.55rem 0; border-top: 1px solid var(--line-soft); }
+.cal-row:first-child { border-top: none; }
+.cal-row dt { flex: 0 0 6.5em; font-size: 0.78rem; color: var(--ink-soft); letter-spacing: 0.06em; }
+.cal-row dd { margin: 0; flex: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; font-size: 0.95rem; }
+.cal-muted { color: var(--ink-soft); font-size: 0.78rem; margin-left: 0.4rem; }
+.cal-kou-link { color: var(--accent); text-decoration: none; }
+.cal-note { margin: 0.6rem 0 0; font-size: 0.7rem; color: var(--ink-soft); }
+.cal-empty { color: var(--ink-soft); }
+
+/* Today: 今日の暦 card */
+.almanac { margin: 1.5rem 0; }
+.almanac-link {
+  display: block; padding: 1rem 1.15rem; background: var(--card); border: 1px solid var(--line);
+  border-radius: 16px; color: var(--ink); text-decoration: none;
+}
+.almanac-head { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.6rem; }
+.almanac-head h2 { margin: 0; font-size: 1rem; font-weight: 500; letter-spacing: 0.12em; }
+.almanac-sub { flex: 1; font-size: 0.75rem; color: var(--ink-soft); letter-spacing: 0.06em; }
+.almanac-chev { color: var(--ink-soft); align-self: center; }
+.almanac-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem 1rem; }
+.almanac-cell { display: flex; flex-direction: column; gap: 0.1rem; }
+.almanac-label { font-size: 0.7rem; color: var(--ink-soft); letter-spacing: 0.08em; }
+.almanac-value { font-size: 0.95rem; display: flex; align-items: center; gap: 0.3rem; }
+
+/* App: compact 七十二候 list */
+.kl-season { margin: 1.6rem 0 0.2rem; font-size: 1.4rem; font-weight: 500; letter-spacing: 0.2em; }
+.kl-sekki { margin: 1rem 0.25rem 0.4rem; font-size: 0.85rem; color: var(--ink-soft); letter-spacing: 0.15em; }
+.kl-box { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.kl-row {
+  display: flex; align-items: center; gap: 0.85rem; min-height: 60px; padding: 0 0.9rem;
+  color: var(--ink); text-decoration: none; border-top: 1px solid var(--line-soft);
+}
+.kl-row:first-child { border-top: none; }
+.kl-row:active { background: rgba(var(--accent-rgb), 0.06); }
+.kl-row.is-today { background: rgba(var(--accent-rgb), 0.08); }
+.kl-no { width: 1.6rem; text-align: right; font-size: 0.75rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.kl-name { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.kl-ja { font-size: 1.05rem; letter-spacing: 0.08em; }
+.kl-row.is-today .kl-ja { color: var(--accent); }
+.kl-reading { font-size: 0.7rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+.kl-now { font-size: 0.68rem; color: #FBF9F4; padding: 0.1rem 0.5rem; border-radius: 999px; letter-spacing: 0.1em; }
+.kl-date { font-size: 0.75rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.kl-chev { color: #B3AA99; }
+
+/* 候 detail */
+.kou-detail { padding-top: 0.5rem; }
+.kd-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.kd-meta { display: flex; flex-direction: column; gap: 0.35rem; padding-top: 0.4rem; }
+.kd-no { margin: 0; font-size: 0.8rem; color: var(--accent); letter-spacing: 0.2em; }
+.kd-sekki { margin: 0; font-size: 0.95rem; letter-spacing: 0.12em; }
+.kd-period { margin: 0; font-size: 0.8rem; color: var(--ink-soft); }
+.kd-name { display: flex; gap: 0.6rem; }
+.kd-title { margin: 0; writing-mode: vertical-rl; font-size: 4.2rem; font-weight: 500; line-height: 1; letter-spacing: 0.08em; }
+.kd-reading { writing-mode: vertical-rl; font-size: 0.8rem; color: var(--ink-soft); letter-spacing: 0.3em; padding-top: 4rem; }
+.kd-trans { margin: 1.4rem 0 0; font-size: 0.95rem; color: var(--accent); letter-spacing: 0.04em; }
+.kd-desc { margin: 1.4rem 0; padding-top: 1.2rem; border-top: 1px solid var(--line); font-size: 0.98rem; line-height: 2; }
+.kd-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+.kd-card { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.85rem 1rem; background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+.kd-label { font-size: 0.7rem; color: var(--ink-soft); letter-spacing: 0.15em; }
+.kd-value { font-size: 1rem; letter-spacing: 0.04em; }
+.kd-pager { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 1.8rem; border-top: 1px solid var(--line); }
+.kd-pager a { display: flex; flex-direction: column; gap: 0.15rem; min-height: 64px; justify-content: center; color: var(--ink); text-decoration: none; }
+.kd-pager a.is-next { align-items: flex-end; text-align: right; }
+.kd-pager-label { font-size: 0.72rem; color: var(--ink-soft); }
+.kd-pager-name { font-size: 1rem; letter-spacing: 0.06em; }
+
+/* App only: onboarding strip belongs to the web landing page. */
+html.native-shell .intro-strip { display: none; }
+
+/* App only: a tighter Today screen so the hero, the season line and the
+   今日の暦 card share the first screen. Duplicate reading and the
+   percentage bar are dropped; the wheel already shows progress. */
+html.native-shell .today-sheet {
+  gap: 1rem 1.5rem; padding-bottom: 0.5rem; margin-bottom: 0; border-bottom: none;
+}
+html.native-shell .today-meta {
+  flex: 1 1 100%; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 0.75rem;
+}
+html.native-shell .today-meta .eyebrow,
+html.native-shell .kou-reading,
+html.native-shell .progress-line,
+html.native-shell .progress-label { display: none; }
+html.native-shell .today-meta .sekki-name { margin: 0; font-size: 1.15rem; }
+html.native-shell .kou-order-badge { border: none; padding: 0; font-size: 0.9rem; }
+html.native-shell .today-dates { flex-basis: 100%; margin: 0.15rem 0 0; font-size: 0.8rem; color: var(--ink-soft); }
+html.native-shell .today-dates strong { font-weight: 400; }
+html.native-shell .almanac { margin: 0.75rem 0 1.5rem; }
+
+/* ===================================================================
+   v1.1 美工 -- living 候 scene (scene.js; 節気帖工作区/DESIGN.md)
+   Painting on top, paper and text below; the lower edge melts into --bg.
+   =================================================================== */
+.kou-scene {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  aspect-ratio: 4 / 5;
+  max-height: 72vh;
+  width: calc(100% + 3.5rem);
+  margin: -0.5rem -1.75rem 0;
+  touch-action: pan-y;
+}
+.kou-scene-img,
+.kou-scene-gl,
+.kou-scene-pt {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.kou-scene-img { object-fit: cover; object-position: 50% 55%; }
+.kou-scene-gl { opacity: 0; transition: opacity 0.6s ease; }
+.kou-scene.is-live .kou-scene-gl { opacity: 1; }
+.kou-scene-pt { pointer-events: none; }
+/* paper fade under the static image too (the GL path fades in-shader) */
+.kou-scene::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 22%;
+  background: linear-gradient(to bottom, rgba(247, 244, 236, 0), var(--bg));
+  pointer-events: none;
+}
+@media (min-width: 760px) {
+  .kou-scene { aspect-ratio: 16 / 10; width: 100%; margin: 0 0 1rem; border-radius: 6px; }
+}
+/* App: the painting runs up under the transparent navigation bar. */
+html.native-shell .kou-scene {
+  margin-top: calc(-1 * var(--cap-native-navigation-top, env(safe-area-inset-top)));
+  max-height: 66vh;
+}
+html.native-shell .kou-detail { padding-top: 0; }
+.kou-detail .kou-scene { margin-bottom: 0.5rem; }
+
+/* ===================================================================
+   v1.1 美工 -- 今 / 絵巻 / 印帳 (App redesign, 2026-10-25)
+   =================================================================== */
+:root { --shu: #B23A2A; --usu: #8A8172; --hair: #D9CFBC; --daisen: #F4EFE3; }
+
+/* --- 今: the painting fills the first screen, paper peeks below --- */
+html.native-shell main .wrap { display: flex; flex-direction: column; position: relative; }
+html.native-shell #kouScene { order: 0; }
+html.native-shell .today-sheet { order: 1; }
+html.native-shell .story-card { order: 2; }
+html.native-shell .almanac { order: 3; }
+html.native-shell .today-actions { order: 4; }
+html.native-shell #notifySection { order: 5; }
+html.native-shell #kouScene.kou-scene {
+  aspect-ratio: auto;
+  max-height: none;
+  height: calc(100svh - var(--cap-native-navigation-bottom, 0px) - 64px);
+  margin-top: calc(-1 * var(--cap-native-navigation-top, env(safe-area-inset-top)));
+}
+html.native-shell #kouScene .kou-scene-img { object-position: 50% 50%; }
+/* the kou name becomes a 題簽 (title slip) pasted on the painting */
+html.native-shell .today-sheet { position: static; overflow: visible; padding: 0; margin: 0; gap: 0; }
+html.native-shell .today-sheet::before {
+  content: "";
+  position: static;
+  display: block;
+  flex: 1 1 100%;
+  height: 7px;
+  margin: 0 -1.75rem 0.9rem;
+  background:
+    radial-gradient(circle at 25% 50%, rgba(222, 190, 120, 0.55) 0 1px, transparent 1.6px) 0 0 / 9px 7px,
+    linear-gradient(var(--accent), var(--accent));
+  opacity: 0.9;
+  inset: auto;
+}
+html.native-shell .kou-hero {
+  position: absolute;
+  top: 14px;
+  right: 1.25rem;
+  z-index: 4;
+  min-height: 0;
+  padding: 0.85rem 0.45rem 0.7rem;
+  border: 1px solid #CDBF9F;
+  background: var(--daisen);
+  box-shadow: 0 6px 18px -10px rgba(40, 30, 10, 0.55), inset 0 0 0 3px var(--daisen), inset 0 0 0 4px rgba(var(--accent-rgb), 0.25);
+  font-size: 1.75rem;
+  letter-spacing: 0.16em;
+  line-height: 1.05;
+  gap: 0.4rem;
+}
+html.native-shell .kou-hero-furigana { font-size: 0.55rem; letter-spacing: 0.2em; }
+html.native-shell .kou-wheel { display: none; }
+html.native-shell .today-meta { padding: 0 0 0.25rem; }
+html.native-shell .today-meta .sekki-name { font-size: 0.95rem; letter-spacing: 0.2em; color: var(--accent); }
+html.native-shell .story-card { border: none; background: none; padding: 0; margin: 0.4rem 0 1rem; box-shadow: none; }
+html.native-shell .story-card > h2 { display: none; }
+html.native-shell .story-card .desc { font-size: 1rem; line-height: 2; margin: 0 0 0.9rem; }
+html.native-shell .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 1px solid var(--hair); border-bottom: 1px solid var(--hair); }
+html.native-shell .story-block { padding: 0.55rem 0; }
+html.native-shell .story-block + .story-block { border-left: 1px solid var(--hair); padding-left: 0.9rem; }
+html.native-shell .story-block h3 { font-size: 0.7rem; letter-spacing: 0.24em; color: var(--usu); margin: 0 0 0.2rem; }
+html.native-shell .food-list { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 0 0.6rem; }
+html.native-shell .flower-name { margin: 0; }
+html.native-shell .today-sekki-link { display: none; }
+
+/* --- seal action (Today) --- */
+.today-actions { margin: 0.5rem 0 1.5rem; }
+.today-actions .seal-press,
+.today-actions .seal-done {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  border-radius: 14px;
+  font-family: var(--serif);
+  font-size: 1rem;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  cursor: pointer;
+}
+.today-actions .seal-press { border: none; background: var(--shu); color: #F7EDE6; }
+.today-actions .seal-done { border: 1px solid var(--hair); color: var(--ink); background: transparent; }
+.today-actions .seal-mark {
+  width: 1.5rem; height: 1.5rem;
+  display: grid; place-items: center;
+  writing-mode: vertical-rl;
+  font-size: 0.6rem; line-height: 1;
+  border-radius: 3px;
+}
+.seal-press .seal-mark { border: 1.5px solid #F7EDE6; }
+.seal-done .seal-mark { background: var(--shu); color: #F7EDE6; transform: rotate(-5deg); }
+.today-actions.is-stamping .seal-mark { animation: seal-stamp 0.6s cubic-bezier(.2,.9,.3,1.3); }
+@keyframes seal-stamp { 0% { transform: scale(2.4) rotate(-12deg); opacity: 0; } 60% { transform: scale(0.92) rotate(-4deg); opacity: 1; } 100% { transform: scale(1) rotate(-5deg); } }
+.seal-press:focus-visible, .seal-done:focus-visible { outline: 2px solid var(--ink-soft); outline-offset: 2px; }
+
+/* --- 絵巻 --- */
+.ek-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin: 0.5rem 0 0.8rem; flex-wrap: wrap; }
+.ek-title { margin: 0; font-weight: 500; font-size: 1.8rem; letter-spacing: 0.16em; }
+.ek-seasons { display: flex; gap: 0.4rem; }
+.ek-seasons button {
+  font-family: var(--serif); font-size: 0.9rem; min-width: 2.6rem; min-height: 34px; padding: 0 0.7rem;
+  border: 1px solid var(--hair); border-radius: 999px; background: transparent; color: var(--ink-soft); cursor: pointer;
+}
+.ek-seasons button[aria-pressed="true"] { background: var(--acc); border-color: var(--acc); color: #F4EFE3; }
+/* 绘卷 v2 (10-26): endless ring driven by page-emaki.js -- panels are
+   absolutely placed and moved with transforms, so no native overflow. */
+.ek-stage {
+  position: relative; overflow: hidden; height: calc(min(60vh, 520px) + 22px);
+  touch-action: pan-y; cursor: grab; outline: none;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--ek-wash, #854836) 7%, transparent) 40%, transparent);
+  transition: background 1.2s ease;
+}
+.ek-stage.is-dragging { cursor: grabbing; }
+.ek-stage:focus-visible { outline: 2px solid var(--ink-soft); outline-offset: -2px; }
+.ek-track { position: absolute; inset: 0; }
+.ek-panel, .ek-join {
+  position: absolute; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column;
+  color: var(--ink); text-decoration: none; will-change: transform; -webkit-user-drag: none;
+}
+.ek-sk {
+  flex: none; height: 22px; box-sizing: border-box; margin: 0; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.22em; color: var(--acc);
+  white-space: nowrap; padding-left: 0.4rem; line-height: 1.1;
+}
+.ek-panel.is-first .ek-sk { border-left: 1px solid var(--acc); }
+.ek-frame {
+  position: relative; flex: 1; display: block; overflow: hidden;
+  border-top: 3px solid #5B4A3A; border-bottom: 3px solid #5B4A3A; background: #E9E1CF;
+}
+.ek-panel + .ek-panel .ek-frame, .ek-panel .ek-frame { border-left: 1px solid rgba(91, 74, 58, 0.25); }
+.ek-panel.is-first .ek-frame { border-left-color: rgba(91, 74, 58, 0.5); }
+.ek-frame img { position: absolute; left: 0; top: 0; height: 100%; max-width: none; display: block; will-change: transform; pointer-events: none; user-select: none; -webkit-user-select: none; }
+.ek-shade { position: absolute; inset: 0; background: #2B241C; opacity: 0; pointer-events: none; }
+.ek-name {
+  position: absolute; left: 50%; bottom: 0.5rem; transform: translateX(-50%); z-index: 1;
+  writing-mode: vertical-rl; font-size: 0.8rem; letter-spacing: 0.14em; line-height: 1.2;
+  background: rgba(244, 239, 227, 0.88); padding: 0.4rem 0.15rem; border-radius: 2px;
+}
+html[lang="en"] .ek-name { writing-mode: horizontal-tb; white-space: nowrap; font-size: 0.65rem; letter-spacing: 0.02em; padding: 0.15rem 0.4rem; max-width: 92%; overflow: hidden; text-overflow: ellipsis; }
+.ek-seal {
+  position: absolute; top: 0.5rem; right: 0.5rem; width: 1.6rem; height: 1.6rem; z-index: 1;
+  display: grid; place-items: center; writing-mode: vertical-rl; font-size: 0.6rem; line-height: 1;
+  background: var(--shu); color: #F7EDE6; border-radius: 3px; transform: rotate(-5deg);
+}
+html[lang="en"] .ek-seal { writing-mode: horizontal-tb; width: auto; padding: 0 0.3rem; }
+.ek-panel:focus-visible { outline: 2px solid var(--ink); outline-offset: -4px; }
+/* 継ぎ目: where 大寒 rolls on into 立春 */
+.ek-join .ek-frame {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
+  background: linear-gradient(90deg, #E4DAC3, #F3ECDD 45%, #F3ECDD 55%, #E4DAC3); border-left: 1px solid rgba(91, 74, 58, 0.5);
+}
+.ek-join-text { writing-mode: vertical-rl; font-size: 0.95rem; letter-spacing: 0.4em; color: #5B4A3A; white-space: nowrap; }
+html[lang="en"] .ek-join-text { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; }
+.ek-join-seal {
+  display: grid; place-items: center; width: 1.7rem; height: 1.7rem; font-size: 0.9rem; border-radius: 3px;
+  border: 1.5px solid var(--shu); color: var(--shu); transform: rotate(-6deg);
+  transition: background 0.5s ease, color 0.5s ease, transform 0.6s cubic-bezier(.2,.9,.3,1.3), box-shadow 0.8s ease;
+}
+.ek-join.is-lit .ek-join-seal { background: var(--shu); color: #F7EDE6; transform: rotate(-6deg) scale(1.15); box-shadow: 0 0 18px rgba(199, 62, 58, 0.45); }
+
+/* year slider */
+.ek-year {
+  position: relative; height: 44px; margin: 0.4rem 0 1rem; touch-action: none; cursor: pointer; outline: none;
+}
+.ek-year::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 21px; height: 3px; border-radius: 2px;
+  background: linear-gradient(90deg, #C99AA3 0 25%, #8DAA8E 25% 50%, #C49A7A 50% 75%, #8FA9B3 75%);
+}
+.ek-year:focus-visible::before { box-shadow: 0 0 0 2px var(--ink-soft); }
+.ek-year b {
+  position: absolute; top: 12px; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%;
+  background: var(--bg); border: 2px solid var(--ink-soft); box-shadow: 0 1px 4px rgba(43, 36, 28, 0.18);
+  transition: transform 0.2s ease;
+}
+.ek-year.is-active b { transform: scale(1.25); border-color: var(--ink); }
+.ek-year-now { position: absolute; top: 17px; width: 2px; height: 11px; margin-left: -1px; background: var(--shu); border-radius: 1px; }
+.ek-year-now::after { content: ""; position: absolute; left: -2px; top: -6px; width: 6px; height: 6px; border-radius: 50%; background: var(--shu); }
+.ek-bubble {
+  position: absolute; bottom: 40px; transform: translateX(-50%) translateY(6px); white-space: nowrap; pointer-events: none;
+  font-size: 0.8rem; letter-spacing: 0.08em; padding: 0.3rem 0.7rem; border-radius: 999px;
+  background: rgba(43, 36, 28, 0.86); color: #F4EFE3; opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.ek-year.is-active .ek-bubble { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* App: the page is exactly one screen -- head, scroll, year bar -- and the
+   year bar sits above the native tab bar instead of under it. */
+html.native-shell body.emaki-page { height: 100svh; overflow: hidden; padding-bottom: var(--cap-native-navigation-bottom, env(safe-area-inset-bottom)); box-sizing: border-box; }
+html.native-shell body.emaki-page main { display: flex; flex-direction: column; height: 100%; margin: 0; padding: 0; }
+html.native-shell body.emaki-page main > .wrap { align-self: stretch; width: 100%; box-sizing: border-box; }
+html.native-shell body.emaki-page .ek-head { margin-top: 0.2rem; }
+html.native-shell body.emaki-page .ek-stage { flex: 1; height: auto; min-height: 200px; }
+html.native-shell body.emaki-page .ek-foot { flex: none; align-self: stretch; width: 100%; box-sizing: border-box; }
+.ek-foot .ek-year { width: 100%; align-self: stretch; box-sizing: border-box; }
+html.native-shell body.emaki-page .ek-year { margin: 0.5rem 0 1rem; }
+html.ek-reduce .ek-join-seal, html.ek-reduce .ek-bubble, html.ek-reduce .ek-stage { transition: none; }
+
+/* --- 印帳 --- */
+.ic-head { display: flex; justify-content: space-between; align-items: baseline; margin: 0.5rem 0 0.3rem; }
+.ic-title { margin: 0; font-weight: 500; font-size: 1.8rem; letter-spacing: 0.16em; }
+.ic-count { font-size: 0.95rem; color: var(--shu); font-variant-numeric: tabular-nums; letter-spacing: 0.06em; }
+.ic-lede { margin: 0 0 1rem; font-size: 0.85rem; line-height: 1.9; color: var(--ink-soft); }
+.ic-last { display: flex; gap: 0.8rem; align-items: center; border: 1px solid var(--hair); border-radius: 14px; padding: 0.5rem; color: var(--ink); text-decoration: none; margin-bottom: 1.2rem; }
+.ic-last img { width: 3rem; height: 4.2rem; object-fit: cover; border-radius: 4px; }
+.ic-last span { display: flex; flex-direction: column; gap: 0.1rem; }
+.ic-last small { font-size: 0.7rem; color: var(--usu); letter-spacing: 0.16em; }
+.ic-last b { font-weight: 500; font-size: 1.05rem; letter-spacing: 0.12em; }
+.ic-last em { font-style: normal; font-size: 0.75rem; color: var(--usu); font-variant-numeric: tabular-nums; }
+.ic-empty { margin: 0 0 1.2rem; font-size: 0.85rem; color: var(--usu); }
+.ic-season h2 { margin: 0 0 0.5rem; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.3em; color: var(--acc); border-bottom: 1px solid var(--hair); padding-bottom: 0.25rem; }
+.ic-season { margin-bottom: 1.2rem; }
+.ic-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.5rem; }
+.ic-seal {
+  aspect-ratio: 1; display: grid; place-items: center; writing-mode: vertical-rl;
+  font-size: 0.68rem; line-height: 1.05; letter-spacing: 0.02em; border-radius: 4px; text-decoration: none; overflow: hidden;
+}
+.ic-seal.is-got { background: var(--shu); color: #F7EDE6; transform: rotate(var(--r, 0deg)); box-shadow: inset 0 0 0 2px rgba(247, 237, 230, 0.35); }
+.ic-seal.is-now { border: 1.5px solid var(--shu); color: var(--shu); }
+.ic-seal.is-wait { border: 1px dashed #CFC5B2; color: #BDB29E; }
+.ic-seal:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (min-width: 760px) { .ic-grid { grid-template-columns: repeat(9, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .today-actions.is-stamping .seal-mark { animation: none; } }
+.about-credit { margin: 2rem 0 0; font-size: 0.85rem; letter-spacing: 0.2em; color: var(--ink-soft); text-align: right; }
+/* pages that open on a painting: no gap above it */
+html.native-shell body.has-scene main { padding-top: 0; }
+html.native-shell .sekki-sub { display: none; }
+html.native-shell .today-meta .sekki-name .sekki-sub { display: none; }
+.kou-cn-note { flex-basis: 100%; margin: 0.1rem 0 0; font-size: 0.78rem; color: var(--ink-soft); letter-spacing: 0.04em; }
+.kd-trans.kd-cn { font-size: 0.82rem; color: var(--ink-soft); }
+
+/* --- 今: paper rises over a painting that stays put (2026-10-25) --- */
+html.native-shell #kouScene.kou-scene { position: sticky; top: 0; z-index: 0; }
+html.native-shell #kouScene .kou-scene-img,
+html.native-shell #kouScene .kou-scene-gl,
+html.native-shell #kouScene .kou-scene-pt { transform: scale(calc(1 + var(--cover, 0) * 0.06)); transform-origin: 50% 40%; }
+html.native-shell #kouScene::before {
+  content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: rgb(30, 24, 16); opacity: calc(var(--cover, 0) * 0.28);
+}
+html.native-shell #kouScene::after { height: 10%; z-index: 3; }
+html.native-shell #kouScene .kou-hero { top: calc(var(--cap-native-navigation-top, 59px) + 14px); z-index: 5; transition: opacity 0.1s linear; }
+html.native-shell .today-sheet::before { display: none; }
+.today-paper {
+  position: relative; z-index: 2;
+  margin: -56px -1.75rem 0; padding: 28px 1.75rem 8px;
+  background: var(--bg);
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -14px 34px -22px rgba(40, 30, 10, 0.55);
+  display: flex; flex-direction: column;
+}
+.today-paper::before {
+  content: ""; position: absolute; top: 10px; left: 50%;
+  width: 38px; height: 4px; margin-left: -19px; border-radius: 2px; background: var(--hair);
+}
+@media (prefers-reduced-motion: reduce) {
+  html.native-shell #kouScene .kou-scene-img, html.native-shell #kouScene .kou-scene-gl, html.native-shell #kouScene .kou-scene-pt { transform: none; }
+}
+
+/* --- 今: the painting alone until the user scrolls (2026-10-25) --- */
+html.native-shell #kouScene.kou-scene { height: 100svh; }
+html.native-shell #kouScene::after { display: none; }          /* no fade: the painting stays whole */
+html.native-shell .today-paper { margin-top: 0; }                /* paper starts below the fold */
+html.native-shell #kouScene.is-still .kou-scene-img,
+html.native-shell #kouScene.is-still .kou-scene-gl,
+html.native-shell #kouScene.is-still .kou-scene-pt { transform: none; }
+html.native-shell #kouScene.is-still::before { opacity: 0; }
+.scene-hint {
+  position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); z-index: 4;
+  width: 36px; height: 4px; margin-left: -18px; border-radius: 2px;
+  background: rgba(255, 255, 255, 0.85); box-shadow: 0 0 6px rgba(40, 30, 10, 0.35);
+  animation: hint-bob 1.6s ease-in-out 1.2s 2;
+  transition: opacity 0.4s ease;
+}
+.scene-hint.is-gone { opacity: 0; }
+html:not(.native-shell) .scene-hint { display: none; }
+@keyframes hint-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) { .scene-hint { animation: none; } }
+
+/* --- 今: smoother hand-off between the painting and the paper (2026-10-25) --- */
+/* fixed bottom room: the tab bar sliding in/out must not resize the page mid-scroll */
+html.native-shell body.has-scene { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 110px); }
+/* two resting places: the painting alone, or the paper fully risen */
+html.native-shell.has-today-scene { scroll-snap-type: y proximity; }
+html.native-shell.has-today-scene #kouScene { scroll-snap-align: start; }
+html.native-shell.has-today-scene .today-paper { scroll-snap-align: start; scroll-margin-top: var(--cap-native-navigation-top, 59px); }
+.scene-hint { animation: none; opacity: 1; transition: opacity 0.5s ease 0.15s; }
+.scene-hint.is-gone { opacity: 0; transition-delay: 0s; }
+.scene-hint.is-bob { animation: hint-bob 1.6s ease-in-out 0.6s 2; }
+@media (prefers-reduced-motion: reduce) { .scene-hint.is-bob { animation: none; } }
+
+/* --- 中国版：今日页附加内容 (2026-10-26) --- */
+.cn-extras { display: flex; flex-direction: column; gap: 1.6rem; margin: 0.5rem 0 1.8rem; }
+.cx-h { margin: 0 0 0.6rem; font-size: 0.95rem; font-weight: 500; letter-spacing: 0.24em; color: var(--accent); }
+.cx-q { margin: 0.4rem 0; padding: 0.2rem 0 0.2rem 0.9rem; border-left: 2px solid var(--line); font-size: 0.92rem; line-height: 1.9; color: #5B4A3A; }
+.cx-q cite { display: block; font-style: normal; font-size: 0.72rem; color: var(--ink-soft); margin-top: 0.15rem; }
+.cx-q-s { font-size: 0.82rem; }
+.cx-en { display: block; font-size: 0.85rem; color: var(--ink); margin-top: 0.3rem; line-height: 1.7; }
+.cx-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin-top: 0.6rem; }
+.cx-cell { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 0.6rem 0.75rem; }
+.cx-cell b { font-weight: 500; font-size: 0.8rem; letter-spacing: 0.2em; color: var(--accent); }
+.cx-cell p { margin: 0.2rem 0 0; font-size: 0.85rem; line-height: 1.75; }
+.cx-note { font-size: 0.72rem; color: var(--ink-soft); margin: 0.5rem 0 0; }
+.cx-list, .cx-eat { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.cx-list b, .cx-eat b { font-weight: 500; letter-spacing: 0.06em; }
+.cx-list p, .cx-eat p { margin: 0.15rem 0 0; font-size: 0.88rem; line-height: 1.8; }
+.cx-tag { font-size: 0.68rem; border: 1px solid var(--line); border-radius: 999px; padding: 0 0.5rem; margin-left: 0.5rem; color: var(--ink-soft); vertical-align: 1px; }
+.cx-tag.is-book { border-color: var(--accent); color: var(--accent); }
+@media (max-width: 380px) { .cx-grid { grid-template-columns: 1fr; } }
+
+/* 10-28: English title sign in the App -- horizontal names are long
+   ("Leaves Turn Yellow and Fall"), so wrap inside a bounded label instead
+   of running off the left edge. */
+html.native-shell[lang="en"] .kou-hero {
+  writing-mode: horizontal-tb; width: auto; max-width: min(64vw, 22rem); white-space: normal; text-align: left;
+  font-size: 1.2rem; letter-spacing: 0.03em; line-height: 1.3; padding: 0.6rem 0.8rem;
+}
+html.native-shell[lang="en"] .kou-hero-furigana { letter-spacing: 0.08em; }
+
+/* 10-29: 候名题签用书法字体(OFL,只含候名用字的子集,随包离线)。
+   日本版=佑字・肃 Yuji Syuku;中国版=马善政楷书 Ma Shan Zheng;
+   两者缺的生僻字(睍鱖雊鴽鵙鹖鴠)取霞鹜文楷字形直接并入各自子集(若用 CSS 回退字体,WebKit 竖排会左右错位)。英文界面不变。 */
+@font-face { font-family: "SekkiTitleJP"; src: url("../fonts/title-jp.woff") format("woff"); font-display: block; }
+@font-face { font-family: "SekkiTitleCN"; src: url("../fonts/title-cn.woff") format("woff"); font-display: block; }
+:root { --title-font: "SekkiTitleJP", var(--serif); }
+html[data-edition="cn"] { --title-font: "SekkiTitleCN", var(--serif); }
+html .kou-hero, html .kd-title { font-family: var(--title-font); font-weight: 400; }
+html .kou-hero-furigana { font-family: var(--serif); }

@@ -1,21 +1,24 @@
 (function () {
   "use strict";
 
+  // Traditional Japanese colors (nipponcolors.com hex), each >= 4.5:1 on the
+  // #F7F4EC paper so the accent can carry small text: 蘇芳 suō / 木賊 tokusa /
+  // 檜皮 hiwada / 藍 ai.
   var SEASON_COLORS = {
-    spring: "#C48A9C",
-    summer: "#6E8B74",
-    autumn: "#B5762A",
-    winter: "#6B7A8C"
+    spring: "#8E354A",
+    summer: "#2D6D4B",
+    autumn: "#854836",
+    winter: "#0D5661"
   };
 
   // Same four colors expressed as "r,g,b" triplets so CSS can compose
   // rgba(var(--accent-rgb), <alpha>) for low-opacity seasonal washes
   // (hero background wash, wheel arcs, etc.) without needing color-mix().
   var SEASON_RGB = {
-    spring: "196,138,156",
-    summer: "110,139,116",
-    autumn: "181,118,42",
-    winter: "107,122,140"
+    spring: "142,53,74",
+    summer: "45,109,75",
+    autumn: "133,72,54",
+    winter: "13,86,97"
   };
 
   function hexToRgbaString(hex, alpha) {

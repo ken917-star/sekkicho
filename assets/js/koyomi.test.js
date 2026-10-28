@@ -59,7 +59,7 @@ check("2026-07-22 (day before taisho) is still shousho, final pentad", function 
 check("2026-01-01 belongs to touji 2025 (cross-year continuation)", function () {
   var r = Koyomi.getKoyomi(d(2026, 1, 1));
   assert.strictEqual(r.sekki.id, "touji");
-  assert.strictEqual(r.sekki.startDate, "2025-12-21");
+  assert.strictEqual(r.sekki.startDate, "2025-12-22");
   assert.strictEqual(r.sekki.endDate, "2026-01-04");
 });
 
@@ -70,7 +70,7 @@ check("2026-01-01 belongs to touji 2025 (cross-year continuation)", function () 
 check("2025-12-31 also belongs to touji 2025", function () {
   var r = Koyomi.getKoyomi(d(2025, 12, 31));
   assert.strictEqual(r.sekki.id, "touji");
-  assert.strictEqual(r.sekki.startDate, "2025-12-21");
+  assert.strictEqual(r.sekki.startDate, "2025-12-22");
 });
 
 // ---------------------------------------------------------------------

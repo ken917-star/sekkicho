@@ -1,5 +1,7 @@
 (function () {
   "use strict";
+  function KN(k, lang) { return window.SekkiKouName ? window.SekkiKouName.name(k, lang) : (k[lang] || k.ja); }
+
 
   // 節気帖 signature visual: the "72 Micro-Seasons Wheel" (七十二候年輪).
   // Pure JS + inline SVG, no external resources. Draws 72 tick marks around
@@ -108,7 +110,7 @@
 
       var a = svgEl("a", { href: "./koyomi.html#" + k.id });
       var titleEl = svgEl("title", {});
-      titleEl.textContent = k[lang] + " -- " + sekki[lang];
+      titleEl.textContent = KN(k, lang) + " -- " + sekki[lang];
       a.appendChild(titleEl);
 
       var line = svgEl("line", {

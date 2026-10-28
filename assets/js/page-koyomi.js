@@ -1,5 +1,7 @@
 (function () {
   "use strict";
+  function KN(k, lang) { return window.SekkiKouName ? window.SekkiKouName.name(k, lang) : (k[lang] || k.ja); }
+
 
   var SEASON_ORDER = ["spring", "summer", "autumn", "winter"];
 
@@ -10,7 +12,72 @@
     return parseInt(kouId.split("-")[1], 10);
   }
 
+  // App build: a compact, tappable list (number / name / reading / date);
+  // the full story lives on kou.html. The web keeps the long reading page.
+  function renderCompact() {
+    var lang = window.SekkiI18n.getLang();
+    var t = window.SekkiI18n.t;
+    var data = window.SEKKI_DATA;
+    var common = window.SekkiCommon;
+    var today = null, ranges = {};
+    try {
+      today = window.Koyomi.getKoyomi(new Date());
+      var d = new Date();
+      for (var i = 0; i < 366; i++, d.setDate(d.getDate() + 1)) {
+        var r = window.Koyomi.getKoyomi(d);
+        if (r.kou && !ranges[r.kou.id]) ranges[r.kou.id] = r.kouRange.start;
+      }
+    } catch (e) { /* dates are optional */ }
+    var todayId = today && today.kou ? today.kou.id : null;
+
+    var container = document.getElementById("koyomiList");
+    container.innerHTML = "";
+    container.className = "kl";
+    SEASON_ORDER.forEach(function (season) {
+      var color = common.SEASON_COLORS[season];
+      var h = document.createElement("h2");
+      h.className = "kl-season";
+      h.style.color = color;
+      h.textContent = t("season_" + season, lang);
+      container.appendChild(h);
+      data.sekki.filter(function (s) { return s.season === season; }).forEach(function (s) {
+        var head = document.createElement("p");
+        head.className = "kl-sekki";
+        head.textContent = s[lang] || s.ja;
+        container.appendChild(head);
+        var box = document.createElement("div");
+        box.className = "kl-box";
+        data.kou.filter(function (k) { return k.sekkiId === s.id; })
+          .sort(function (a, b) { return a.order - b.order; })
+          .forEach(function (k) {
+            var a = document.createElement("a");
+            a.className = "kl-row" + (k.id === todayId ? " is-today" : "");
+            a.href = "./kou.html?id=" + k.id;
+            a.id = k.id;
+            var start = ranges[k.id];
+            a.innerHTML =
+              '<span class="kl-no">' + kouGlobalIndex(k.id) + "</span>" +
+              '<span class="kl-name"><span class="kl-ja"></span><span class="kl-reading"></span></span>' +
+              (k.id === todayId ? '<span class="kl-now"></span>' : "") +
+              '<span class="kl-date">' + (start ? (+start.slice(5, 7)) + "/" + (+start.slice(8, 10)) : "") + "</span>" +
+              '<svg class="kl-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+            a.querySelector(".kl-ja").textContent = KN(k, lang);
+            a.querySelector(".kl-reading").textContent = lang === "ja" ? k.jaReading : k.ja;
+            var now = a.querySelector(".kl-now");
+            if (now) { now.textContent = t("entry_now_label", lang); now.style.background = color; }
+            box.appendChild(a);
+          });
+        container.appendChild(box);
+      });
+    });
+    if (todayId) {
+      var row = document.getElementById(todayId);
+      if (row) row.scrollIntoView({ block: "center" });
+    }
+  }
+
   function render() {
+    if (document.documentElement.classList.contains("native-shell")) return renderCompact();
     var lang = window.SekkiI18n.getLang();
     var t = window.SekkiI18n.t;
     var data = window.SEKKI_DATA;
@@ -88,7 +155,7 @@
 
           var order = document.createElement("span");
           order.className = "entry-order";
-          order.textContent = t("kou_order_" + k.order, lang) + " -- " + s[lang];
+          order.textContent = t("kou_order_" + k.order, lang) + " · " + s[lang];
           header.appendChild(order);
 
           if (isToday) {
@@ -101,7 +168,7 @@
 
           var name = document.createElement("span");
           name.className = "entry-name";
-          name.textContent = k[lang];
+          name.textContent = KN(k, lang);
           header.appendChild(name);
 
           if (k.jaReading) {
